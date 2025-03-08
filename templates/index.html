@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StegaSecure - Image Steganography Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        :root {
+            --primary-color: #3a86ff;
+            --secondary-color: #38b000;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --gray-color: #e9ecef;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .app-container {
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .app-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .app-subtitle {
+            color: #6c757d;
+            font-weight: 300;
+            font-size: 1.1rem;
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: none;
+        }
+
+        .hide-card .card-header {
+            background: linear-gradient(45deg, #3a86ff, #00b4d8);
+        }
+
+        .extract-card .card-header {
+            background: linear-gradient(45deg, #38b000, #80b918);
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header h2 i {
+            margin-right: 10px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            border: 1px solid #ced4da;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.25);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            margin-bottom: 1rem;
+            border: 2px dashed #ced4da;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: border-color 0.3s;
+            background-color: #f8f9fa;
+        }
+
+        .file-upload-wrapper.dragover,
+        .file-upload-wrapper:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(58, 134, 255, 0.05);
+        }
+
+        .file-upload-message {
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .file-upload-message i {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .file-upload-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .preview-container {
+            display: none;
+            width: 100%;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-info {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #2a75e6;
+            border-color: #2a75e6;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-success:hover {
+            background-color: #2c9000;
+            border-color: #2c9000;
+            transform: translateY(-2px);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .result-card {
+            display: none;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+            background-color: white;
+            overflow: hidden;
+        }
+
+        .result-header {
+            padding: 1rem 1.5rem;
+            background: linear-gradient(45deg, #4cc9f0, #4361ee);
+            color: white;
+        }
+
+        .result-body {
+            padding: 1.5rem;
+        }
+
+        .extracted-message {
+            background-color: var(--gray-color);
+            border-radius: 8px;
+            padding: 1rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .copy-btn {
+            margin-top: 1rem;
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-top: 1.5rem;
+            font-weight: 500;
+        }
+
+        .alert i {
+            margin-right: 8px;
+        }
+
+        .options-container {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: var(--light-color);
+            border-radius: 8px;
+        }
+
+        .tab-controls {
+            display: flex;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-control {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            background-color: white;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: none;
+        }
+
+        .tab-control.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .tab-control:first-child.active {
+            background-color: var(--primary-color);
+        }
+
+        .tab-control:last-child.active {
+            background-color: var(--secondary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background-color: rgba(58, 134, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .feature-icon i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .info-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(58, 134, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="app-container">
+        <div class="app-header">
+            <h1 class="app-title">StegaSecure</h1>
+            <p class="app-subtitle">Hide your secret messages inside images securely</p>
+        </div>
+
+        <div class="tab-controls">
+            <button class="tab-control active" data-tab="hide-tab">
+                <i class="fas fa-eye-slash"></i> Hide Message
+            </button>
+            <button class="tab-control" data-tab="extract-tab">
+                <i class="fas fa-eye"></i> Extract Message
+            </button>
+        </div>
+
+        <div class="tab-content active" id="hide-tab">
+            <div class="feature-card hide-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-lock"></i> Hide Your Secret Message</h2>
+                </div>
+                <div class="card-body">
+                    <form id="hideForm" method="post" action="/hide" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">Upload Image</label>
+                            <div class="file-upload-wrapper" id="hideUploadWrapper">
+                                <div class="file-upload-message">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Drag & drop your image here or click to browse</p>
+                                    <span class="text-muted small">Supported formats: PNG, JPG, JPEG</span>
+                                </div>
+                                <input type="file" class="file-upload-input" id="hideImageUpload" name="image" accept=".png, .jpg, .jpeg" required>
+                            </div>
+                            <div class="preview-container" id="hidePreviewContainer">
+                                <img src="" class="image-preview" id="hideImagePreview" alt="Preview">
+                                <p class="preview-info" id="hidePreviewInfo"></p>
+                                <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="hideRemoveBtn">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="options-container">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="encryptMessage" name="encrypt">
+                                        <label class="form-check-label" for="encryptMessage">
+                                            <i class="fas fa-shield-alt"></i> Encrypt message
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="preserveQuality" name="preserve_quality" checked>
+                                        <label class="form-check-label" for="preserveQuality">
+                                            <i class="fas fa-gem"></i> Preserve image quality
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="password-container" id="passwordContainer" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Encryption Password</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">Choose a strong password you'll remember</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="messageToHide" class="form-label">Your Secret Message</label>
+                            <textarea class="form-control" id="messageToHide" name="message" rows="5" placeholder="Type your secret message here..." required></textarea>
+                            <div class="d-flex justify-content-between mt-2">
+                                <small class="text-muted" id="messageCounter">0 characters</small>
+                                <small class="text-muted">Maximum capacity depends on image size</small>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-magic"></i> Hide Message & Download Image
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="extract-tab">
+            <div class="feature-card extract-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-unlock-alt"></i> Extract Hidden Message</h2>
+                </div>
+                <div class="card-body">
+                    <form id="extractForm" method="post" action="/extract" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">Upload Image with Hidden Message</label>
+                            <div class="file-upload-wrapper" id="extractUploadWrapper">
+                                <div class="file-upload-message">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Drag & drop your image here or click to browse</p>
+                                    <span class="text-muted small">Upload an image with a hidden message</span>
+                                </div>
+                                <input type="file" class="file-upload-input" id="extractImageUpload" name="image" accept=".png, .jpg, .jpeg" required>
+                            </div>
+                            <div class="preview-container" id="extractPreviewContainer">
+                                <img src="" class="image-preview" id="extractImagePreview" alt="Preview">
+                                <p class="preview-info" id="extractPreviewInfo"></p>
+                                <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="extractRemoveBtn">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="password-container mb-4">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="isEncrypted" name="is_encrypted">
+                                <label class="form-check-label" for="isEncrypted">
+                                    <i class="fas fa-lock"></i> Message is encrypted
+                                </label>
+                            </div>
+
+                            <div id="extractPasswordContainer" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="extractPassword" class="form-label">Decryption Password</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="extractPassword" name="password" placeholder="Enter password">
+                                        <button class="btn btn-outline-secondary" type="button" id="toggleExtractPassword">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-search"></i> Extract Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-card" id="resultCard">
+            <div class="result-header">
+                <h3><i class="fas fa-check-circle"></i> Message Extracted</h3>
+            </div>
+            <div class="result-body">
+                <h4>Hidden Message:</h4>
+                <div class="extracted-message" id="extractedMessage"></div>
+                <button type="button" class="btn btn-outline-primary copy-btn" id="copyBtn">
+                    <i class="fas fa-copy"></i> Copy to clipboard
+                </button>
+            </div>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="info-section">
+            <h3 class="info-title">About Image Steganography</h3>
+            <p>Steganography is the practice of hiding secret information within ordinary, non-secret data or a physical object to avoid detection. In digital steganography, messages are hidden within digital files such as images, audio, or video.</p>
+
+            <div class="row mt-4">
+                <div class="col-md-4 mb-3">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h5>Secure Hiding</h5>
+                    <p class="text-muted">Your message is securely embedded within the pixels of the image, making it invisible to the naked eye.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h5>Optional Encryption</h5>
+                    <p class="text-muted">Add an extra layer of security by encrypting your message with a password.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="feature-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h5>Quality Preservation</h5>
+                    <p class="text-muted">The tool minimizes visual degradation, making the steganography nearly undetectable.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 StegaSecure | Privacy-focused steganography tool</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const tabControls = document.querySelectorAll('.tab-control');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabControls.forEach(control => {
+                control.addEventListener('click', () => {
+                    const tabId = control.getAttribute('data-tab');
+
+                    // Update active tab control
+                    tabControls.forEach(c => c.classList.remove('active'));
+                    control.classList.add('active');
+
+                    // Update active tab content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === tabId) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+
+            // File Upload - Hide
+            const hideImageUpload = document.getElementById('hideImageUpload');
+            const hideUploadWrapper = document.getElementById('hideUploadWrapper');
+            const hidePreviewContainer = document.getElementById('hidePreviewContainer');
+            const hideImagePreview = document.getElementById('hideImagePreview');
+            const hidePreviewInfo = document.getElementById('hidePreviewInfo');
+            const hideRemoveBtn = document.getElementById('hideRemoveBtn');
+
+            // File Upload - Extract
+            const extractImageUpload = document.getElementById('extractImageUpload');
+            const extractUploadWrapper = document.getElementById('extractUploadWrapper');
+            const extractPreviewContainer = document.getElementById('extractPreviewContainer');
+            const extractImagePreview = document.getElementById('extractImagePreview');
+            const extractPreviewInfo = document.getElementById('extractPreviewInfo');
+            const extractRemoveBtn = document.getElementById('extractRemoveBtn');
+
+            // Message counter
+            const messageToHide = document.getElementById('messageToHide');
+            const messageCounter = document.getElementById('messageCounter');
+
+            // Encrypt checkbox
+            const encryptMessage = document.getElementById('encryptMessage');
+            const passwordContainer = document.getElementById('passwordContainer');
+
+            // Extract encrypt checkbox
+            const isEncrypted = document.getElementById('isEncrypted');
+            const extractPasswordContainer = document.getElementById('extractPasswordContainer');
+
+            // Password toggle
+            const togglePassword = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
+            const toggleExtractPassword = document.getElementById('toggleExtractPassword');
+            const extractPassword = document.getElementById('extractPassword');
+
+            // Forms
+            const hideForm = document.getElementById('hideForm');
+            const extractForm = document.getElementById('extractForm');
+
+            // Result card
+            const resultCard = document.getElementById('resultCard');
+            const extractedMessage = document.getElementById('extractedMessage');
+            const copyBtn = document.getElementById('copyBtn');
+
+            // Loading overlay
+            const loadingOverlay = document.querySelector('.loading-overlay');
+
+            // Alert container
+            const alertContainer = document.getElementById('alertContainer');
+
+            // Function to show alerts
+            function showAlert(message, type) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+                alertDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                alertContainer.innerHTML = ''; // Clear previous alerts
+                alertContainer.appendChild(alertDiv);
+            }
+
+
+            // File drag and drop handlers
+            function setupDragAndDrop(uploadWrapper, fileInput) {
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    uploadWrapper.addEventListener(eventName, preventDefaults, false);
+                });
+
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadWrapper.addEventListener(eventName, () => {
+                        uploadWrapper.classList.add('dragover');
+                    }, false);
+                });
+
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadWrapper.addEventListener(eventName, () => {
+                        uploadWrapper.classList.remove('dragover');
+                    }, false);
+                });
+
+                uploadWrapper.addEventListener('drop', (e) => {
+                    const dt = e.dataTransfer;
+                    fileInput.files = dt.files;
+
+                    // Trigger change event
+                    const event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                }, false);
+            }
+
+            // Setup drag and drop for both upload areas
+            setupDragAndDrop(hideUploadWrapper, hideImageUpload);
+            setupDragAndDrop(extractUploadWrapper, extractImageUpload);
+
+            // File preview handlers
+            function handleFileSelect(fileInput, previewContainer, previewImage, previewInfo) {
+                if (fileInput.files && fileInput.files[0]) {
+                    const file = fileInput.files[0];
+
+                    // Check if file is an image
+                    if (!file.type.match('image.*')) {
+                        showAlert('Please select a valid image file (PNG, JPG, JPEG).', 'danger');
+                        return;
+                    }
+
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewContainer.style.display = 'block';
+
+                        // Get file info
+                        const fileName = file.name;
+                        const fileSize = formatFileSize(file.size);
+                        previewInfo.textContent = `${fileName} (${fileSize})`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            hideImageUpload.addEventListener('change', function() {
+                handleFileSelect(hideImageUpload, hidePreviewContainer, hideImagePreview, hidePreviewInfo);
+                hideUploadWrapper.style.display = 'none';
+            });
+
+            extractImageUpload.addEventListener('change', function() {
+                handleFileSelect(extractImageUpload, extractPreviewContainer, extractImagePreview, extractPreviewInfo);
+                extractUploadWrapper.style.display = 'none';
+            });
+
+            // Remove image handlers
+            hideRemoveBtn.addEventListener('click', function() {
+                hideImageUpload.value = '';
+                hidePreviewContainer.style.display = 'none';
+                hideUploadWrapper.style.display = 'flex';
+            });
+
+            extractRemoveBtn.addEventListener('click', function() {
+                extractImageUpload.value = '';
+                extractPreviewContainer.style.display = 'none';
+                extractUploadWrapper.style.display = 'flex';
+            });
+
+            // Message counter
+            messageToHide.addEventListener('input', function() {
+                const count = messageToHide.value.length;
+                messageCounter.textContent = `${count} character${count !== 1 ? 's' : ''}`;
+            });
+
+            // Encrypt checkbox handler
+            encryptMessage.addEventListener('change', function() {
+                passwordContainer.style.display = encryptMessage.checked ? 'block' : 'none';
+            });
+
+            // Extract encrypt checkbox handler
+            isEncrypted.addEventListener('change', function() {
+                extractPasswordContainer.style.display = isEncrypted.checked ? 'block' : 'none';
+            });
+
+            // Password toggles
+            togglePassword.addEventListener('click', function() {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+
+            toggleExtractPassword.addEventListener('click', function() {
+                const type = extractPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+                extractPassword.setAttribute('type', type);
+                toggleExtractPassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+
+            // Form submission - Hide Message
+            hideForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Validate form (keep your validation code)
+                if (!hideImageUpload.files || hideImageUpload.files.length === 0) {
+                    showAlert('Please select an image.', 'danger');
+                    return;
+                }
+                if (!messageToHide.value.trim()) {
+                    showAlert('Please enter a message to hide.', 'danger');
+                    return;
+                }
+                if (encryptMessage.checked && (!password.value || password.value.length < 4)) {
+                    showAlert('Please enter a password (minimum 4 characters).', 'danger');
+                    return;
+                }
+
+                // Show loading
+                loadingOverlay.style.display = 'flex';
+
+                // **Instead of setTimeout, submit the form using JavaScript Fetch API**
+                const formData = new FormData(hideForm); // Create FormData object from the form
+                fetch('/hide', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    loadingOverlay.style.display = 'none'; // Hide loading
+                    if (response.ok) {
+                        return response.blob(); // Expecting image blob as response
+                    } else {
+                        return response.text().then(text => { // Handle error response as text
+                            throw new Error(`Server error: ${response.status} - ${text}`);
+                        });
+                    }
+                })
+                .then(blob => {
+                    // Handle successful response (image download)
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'encoded_image.png'; // Suggest download filename
+                    document.body.appendChild(a); // Append to the document
+                    a.click(); // Programmatically trigger download
+                    a.remove(); // Clean up URL object
+                    showAlert('Message hidden successfully! The image has been downloaded.', 'success');
+
+                })
+                .catch(error => {
+                    loadingOverlay.style.display = 'none'; // Hide loading even on error
+                    showAlert(`Error: ${error.message}`, 'danger'); // Show error message
+                });
+            });
+
+            // Form submission - Extract Message
+            extractForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Validate form
+                if (!extractImageUpload.files || extractImageUpload.files.length === 0) {
+                    showAlert('Please select an image to extract the message from.', 'danger');
+                    return;
+                }
+
+                // Show loading
+                loadingOverlay.style.display = 'flex';
+
+                // Submit form data using Fetch API
+                const formData = new FormData(extractForm);
+                fetch('/extract', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    loadingOverlay.style.display = 'none'; // Hide loading
+                    if (response.ok) {
+                        return response.text(); // Expecting extracted message as text
+                    } else {
+                        return response.text().then(text => { // Handle error response as text
+                            throw new Error(`Server error: ${response.status} - ${text}`);
+                        });
+                    }
+                })
+                .then(message => {
+                    // Handle successful response (display extracted message)
+                    resultCard.style.display = 'block';
+                    extractedMessage.textContent = message;
+                    showAlert('Message extracted successfully!', 'success');
+                })
+                .catch(error => {
+                    loadingOverlay.style.display = 'none'; // Hide loading even on error
+                    showAlert(`Error: ${error.message}`, 'danger'); // Show error message
+                    resultCard.style.display = 'none'; // Hide result card on error
+                });
+            });
+
+
+            // Utility function to format file size
+            function formatFileSize(bytes) {
+                if (bytes < 1024) {
+                    return bytes + ' bytes';
+                } else if (bytes < 1048576) {
+                    return (bytes / 1024).toFixed(1) + ' KB';
+                } else {
+                    return (bytes / 1048576).toFixed(1) + ' MB';
+                }
+            }
+
+            // Copy to clipboard functionality
+            copyBtn.addEventListener('click', function() {
+                const messageText = extractedMessage.textContent;
+                navigator.clipboard.writeText(messageText).then(() => {
+                    showAlert('Message copied to clipboard!', 'info');
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    showAlert('Failed to copy message to clipboard.', 'warning');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
