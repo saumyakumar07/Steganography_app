@@ -1,2 +1,15 @@
-flask
-pillow
+blinker==1.9.0
+cffi==1.17.1
+click==8.1.8
+cryptography==44.0.2
+Flask==3.1.0
+hashes==1.1.0
+itsdangerous==2.2.0
+Jinja2==3.1.6
+MarkupSafe==3.0.2
+Padding==0.5
+passlib==1.7.4
+pillow==11.1.0
+py-bcrypt==0.4
+pycparser==2.22
+Werkzeug==3.1.3
