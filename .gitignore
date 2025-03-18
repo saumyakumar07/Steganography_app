@@ -54,3 +54,5 @@ Pipfile.lock
 
 # Windows system files
 Thumbs.db
+
+static/uploads/*
