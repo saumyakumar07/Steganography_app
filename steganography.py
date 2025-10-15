@@ -41,7 +41,7 @@ def encode_message(image_path, message, output_path, encrypted=False, password=N
         encryptor = cipher.encryptor()
         
 
-        padder = padding.PKCS7(algorithms.AES.block_size).padder()  # PKCS7 padding
+        padder = padding.PKCS7(algorithms.AES.block_size).padder() 
         padded_binary_message = padder.update(binary_message.encode()) + padder.finalize()
         ciphertext = encryptor.update(padded_binary_message) + encryptor.finalize()
         
@@ -134,7 +134,7 @@ def decode_message(image_path, is_encrypted=False, password=None):
         decrypted_binary_message = decrypted_binary_message_bytes.decode()
         decrypted_binary_message= ''.join([chr(int(decrypted_binary_message[i:i+8], 2)) for i in range(0, len(decrypted_binary_message), 8)])
 
-    else:  # If not encrypted, proceed with plain decoding
+    else: 
         decrypted_binary_message = "".join([chr(int(byte, 2)) for byte in binary_message_bytes])
 
     message = ''
@@ -142,17 +142,17 @@ def decode_message(image_path, is_encrypted=False, password=None):
         if char.isprintable():
             message += char
         else:
-            break  # Stop at the first non-printable character
-
+            break 
     return message
 
 if __name__ == "__main__":
     original_image = "input.png"
     secret_message = "This is a secret message! with encryption test."
     output_image = "stego_image_encrypted.png"
-    encryption_password = "mySecretPassword123"  # Example password
+    encryption_password = "mySecretPassword123"  
 
     if not os.path.exists(original_image):
         dummy_image = Image.new('RGB', (100, 100), color='red')
 
         dummy_image.save
+
