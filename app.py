@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = 'static/uploads/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'} # Allowed image extensions
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'} 
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -20,13 +20,13 @@ def index():
 @app.route('/hide', methods=['POST'])
 def hide_message():
     if request.method == 'POST':
-        # Check if image file is uploaded
+        
         if 'image' not in request.files:
             return "Error: No image part"
 
         file = request.files['image']
 
-        # If no file is selected
+       
         if file.filename == '':
             return "Error: No selected image"
 
@@ -44,21 +44,21 @@ def hide_message():
             preserve_quality = request.form.get('preserve_quality') == 'on'
 
             try:
-                encoded_image_path = encode_message(image_path, message_to_hide, 'static/uploads/encoded_image.png', encrypted, password, preserve_quality) # Changed output path
+                encoded_image_path = encode_message(image_path, message_to_hide, 'static/uploads/encoded_image.png', encrypted, password, preserve_quality) 
                 if encoded_image_path:
-                    return send_file(encoded_image_path, as_attachment=True, download_name='encoded_image.png') # Force download
+                    return send_file(encoded_image_path, as_attachment=True, download_name='encoded_image.png') 
                 else:
                     return "Error during message encoding."
             except Exception as e:
-                os.remove(image_path) # Clean up uploaded image in case of error
+                os.remove(image_path) 
                 return f"Error during message encoding: {str(e)}"
             finally:
-                os.remove(image_path) # Clean up uploaded image
+                os.remove(image_path) 
 
 
         else:
             return "Error: Allowed image types are: png, jpg, jpeg"
-    return redirect(url_for('index')) # Redirect to home if not POST
+    return redirect(url_for('index')) 
 
 @app.route('/extract', methods=['POST'])
 def extract_message():
@@ -80,22 +80,23 @@ def extract_message():
 
             try:
                 extracted_message_text = decode_message(image_path, is_encrypted, password)
-                os.remove(image_path) # Clean up uploaded image after processing
+                os.remove(image_path) 
 
                 if extracted_message_text:
-                    return extracted_message_text # Correct: Return extracted message as plain text
+                    return extracted_message_text 
                 else:
                     return "No message extracted or incorrect password."
             except Exception as e:
-                os.remove(image_path) # Clean up uploaded image in case of error
+                os.remove(image_path) 
                 return f"Error during message extraction: {str(e)}"
 
         else:
             return "Error: Allowed image types are: png, jpg, jpeg"
 
-    return redirect(url_for('index')) # Redirect to home if not POST
+    return redirect(url_for('index')) 
 
 
 if __name__ == '__main__':
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True) # Make sure upload folder exists
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True) 
     app.run(debug=True)
+
