@@ -569,19 +569,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Tab switching
+            
             const tabControls = document.querySelectorAll('.tab-control');
             const tabContents = document.querySelectorAll('.tab-content');
 
             tabControls.forEach(control => {
                 control.addEventListener('click', () => {
                     const tabId = control.getAttribute('data-tab');
-
-                    // Update active tab control
+                    
                     tabControls.forEach(c => c.classList.remove('active'));
                     control.classList.add('active');
 
-                    // Update active tab content
                     tabContents.forEach(content => {
                         content.classList.remove('active');
                         if (content.id === tabId) {
@@ -592,7 +590,6 @@
             });
 
 
-            // File Upload - Hide
             const hideImageUpload = document.getElementById('hideImageUpload');
             const hideUploadWrapper = document.getElementById('hideUploadWrapper');
             const hidePreviewContainer = document.getElementById('hidePreviewContainer');
@@ -600,7 +597,6 @@
             const hidePreviewInfo = document.getElementById('hidePreviewInfo');
             const hideRemoveBtn = document.getElementById('hideRemoveBtn');
 
-            // File Upload - Extract
             const extractImageUpload = document.getElementById('extractImageUpload');
             const extractUploadWrapper = document.getElementById('extractUploadWrapper');
             const extractPreviewContainer = document.getElementById('extractPreviewContainer');
@@ -608,40 +604,31 @@
             const extractPreviewInfo = document.getElementById('extractPreviewInfo');
             const extractRemoveBtn = document.getElementById('extractRemoveBtn');
 
-            // Message counter
             const messageToHide = document.getElementById('messageToHide');
             const messageCounter = document.getElementById('messageCounter');
 
-            // Encrypt checkbox
             const encryptMessage = document.getElementById('encryptMessage');
             const passwordContainer = document.getElementById('passwordContainer');
 
-            // Extract encrypt checkbox
             const isEncrypted = document.getElementById('isEncrypted');
             const extractPasswordContainer = document.getElementById('extractPasswordContainer');
 
-            // Password toggle
             const togglePassword = document.getElementById('togglePassword');
             const password = document.getElementById('password');
             const toggleExtractPassword = document.getElementById('toggleExtractPassword');
             const extractPassword = document.getElementById('extractPassword');
 
-            // Forms
             const hideForm = document.getElementById('hideForm');
             const extractForm = document.getElementById('extractForm');
 
-            // Result card
             const resultCard = document.getElementById('resultCard');
             const extractedMessage = document.getElementById('extractedMessage');
             const copyBtn = document.getElementById('copyBtn');
 
-            // Loading overlay
             const loadingOverlay = document.querySelector('.loading-overlay');
 
-            // Alert container
             const alertContainer = document.getElementById('alertContainer');
 
-            // Function to show alerts
             function showAlert(message, type) {
                 const alertDiv = document.createElement('div');
                 alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
@@ -649,12 +636,11 @@
                     <i class="fas fa-exclamation-triangle"></i> ${message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 `;
-                alertContainer.innerHTML = ''; // Clear previous alerts
+                alertContainer.innerHTML = '';
                 alertContainer.appendChild(alertDiv);
             }
 
 
-            // File drag and drop handlers
             function setupDragAndDrop(uploadWrapper, fileInput) {
                 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                     uploadWrapper.addEventListener(eventName, preventDefaults, false);
@@ -681,34 +667,28 @@
                     const dt = e.dataTransfer;
                     fileInput.files = dt.files;
 
-                    // Trigger change event
                     const event = new Event('change');
                     fileInput.dispatchEvent(event);
                 }, false);
             }
 
-            // Setup drag and drop for both upload areas
             setupDragAndDrop(hideUploadWrapper, hideImageUpload);
             setupDragAndDrop(extractUploadWrapper, extractImageUpload);
 
-            // File preview handlers
             function handleFileSelect(fileInput, previewContainer, previewImage, previewInfo) {
                 if (fileInput.files && fileInput.files[0]) {
                     const file = fileInput.files[0];
 
-                    // Check if file is an image
                     if (!file.type.match('image.*')) {
                         showAlert('Please select a valid image file (PNG, JPG, JPEG).', 'danger');
                         return;
                     }
 
-                    // Show preview
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         previewImage.src = e.target.result;
                         previewContainer.style.display = 'block';
 
-                        // Get file info
                         const fileName = file.name;
                         const fileSize = formatFileSize(file.size);
                         previewInfo.textContent = `${fileName} (${fileSize})`;
@@ -727,7 +707,6 @@
                 extractUploadWrapper.style.display = 'none';
             });
 
-            // Remove image handlers
             hideRemoveBtn.addEventListener('click', function() {
                 hideImageUpload.value = '';
                 hidePreviewContainer.style.display = 'none';
@@ -740,23 +719,19 @@
                 extractUploadWrapper.style.display = 'flex';
             });
 
-            // Message counter
             messageToHide.addEventListener('input', function() {
                 const count = messageToHide.value.length;
                 messageCounter.textContent = `${count} character${count !== 1 ? 's' : ''}`;
             });
 
-            // Encrypt checkbox handler
             encryptMessage.addEventListener('change', function() {
                 passwordContainer.style.display = encryptMessage.checked ? 'block' : 'none';
             });
 
-            // Extract encrypt checkbox handler
             isEncrypted.addEventListener('change', function() {
                 extractPasswordContainer.style.display = isEncrypted.checked ? 'block' : 'none';
             });
 
-            // Password toggles
             togglePassword.addEventListener('click', function() {
                 const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
                 password.setAttribute('type', type);
@@ -769,11 +744,8 @@
                 toggleExtractPassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
             });
 
-            // Form submission - Hide Message
             hideForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
-
-                // Validate form (keep your validation code)
+                e.preventDefault(); 
                 if (!hideImageUpload.files || hideImageUpload.files.length === 0) {
                     showAlert('Please select an image.', 'danger');
                     return;
@@ -787,87 +759,78 @@
                     return;
                 }
 
-                // Show loading
                 loadingOverlay.style.display = 'flex';
 
-                // **Instead of setTimeout, submit the form using JavaScript Fetch API**
-                const formData = new FormData(hideForm); // Create FormData object from the form
+                const formData = new FormData(hideForm); 
                 fetch('/hide', {
                     method: 'POST',
                     body: formData
                 })
                 .then(response => {
-                    loadingOverlay.style.display = 'none'; // Hide loading
+                    loadingOverlay.style.display = 'none'; 
                     if (response.ok) {
-                        return response.blob(); // Expecting image blob as response
+                        return response.blob(); 
                     } else {
-                        return response.text().then(text => { // Handle error response as text
+                        return response.text().then(text => { 
                             throw new Error(`Server error: ${response.status} - ${text}`);
                         });
                     }
                 })
                 .then(blob => {
-                    // Handle successful response (image download)
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'encoded_image.png'; // Suggest download filename
-                    document.body.appendChild(a); // Append to the document
-                    a.click(); // Programmatically trigger download
-                    a.remove(); // Clean up URL object
+                    a.download = 'encoded_image.png'; 
+                    document.body.appendChild(a); 
+                    a.click(); 
+                    a.remove(); 
                     showAlert('Message hidden successfully! The image has been downloaded.', 'success');
 
                 })
                 .catch(error => {
-                    loadingOverlay.style.display = 'none'; // Hide loading even on error
-                    showAlert(`Error: ${error.message}`, 'danger'); // Show error message
+                    loadingOverlay.style.display = 'none'; 
+                    showAlert(`Error: ${error.message}`, 'danger'); 
                 });
             });
 
-            // Form submission - Extract Message
             extractForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
+                e.preventDefault(); 
 
-                // Validate form
                 if (!extractImageUpload.files || extractImageUpload.files.length === 0) {
                     showAlert('Please select an image to extract the message from.', 'danger');
                     return;
                 }
 
-                // Show loading
                 loadingOverlay.style.display = 'flex';
 
-                // Submit form data using Fetch API
                 const formData = new FormData(extractForm);
                 fetch('/extract', {
                     method: 'POST',
                     body: formData
                 })
                 .then(response => {
-                    loadingOverlay.style.display = 'none'; // Hide loading
+                    loadingOverlay.style.display = 'none'; 
                     if (response.ok) {
-                        return response.text(); // Expecting extracted message as text
+                        return response.text();
                     } else {
-                        return response.text().then(text => { // Handle error response as text
+                        return response.text().then(text => { 
                             throw new Error(`Server error: ${response.status} - ${text}`);
                         });
                     }
                 })
                 .then(message => {
-                    // Handle successful response (display extracted message)
                     resultCard.style.display = 'block';
                     extractedMessage.textContent = message;
                     showAlert('Message extracted successfully!', 'success');
                 })
                 .catch(error => {
-                    loadingOverlay.style.display = 'none'; // Hide loading even on error
-                    showAlert(`Error: ${error.message}`, 'danger'); // Show error message
-                    resultCard.style.display = 'none'; // Hide result card on error
+                    loadingOverlay.style.display = 'none'; 
+                    showAlert(`Error: ${error.message}`, 'danger'); 
+                    resultCard.style.display = 'none'; 
                 });
             });
 
 
-            // Utility function to format file size
             function formatFileSize(bytes) {
                 if (bytes < 1024) {
                     return bytes + ' bytes';
@@ -878,7 +841,7 @@
                 }
             }
 
-            // Copy to clipboard functionality
+
             copyBtn.addEventListener('click', function() {
                 const messageText = extractedMessage.textContent;
                 navigator.clipboard.writeText(messageText).then(() => {
@@ -891,4 +854,5 @@
         });
     </script>
 </body>
+
 </html>
